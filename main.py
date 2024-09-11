@@ -84,3 +84,31 @@ def update(
     price: float | None = None,
     count: int | None = None,
 ) -> dict[str, Item]:
+    
+    if item_id not in items:
+            HTTPException(status_code=404, detail=f"Item with {item_id=} does not exist.")
+    if all(info is None for info in (name, price, count)):
+        raise HTTPException(
+            status_code=400, detail="No parameters provided for update."
+        )
+
+    item = items[item_id]
+    if name is not None:
+        item.name = name
+    if price is not None:
+        item.price = price
+    if count is not None:
+        item.count = count
+
+    return {"updated": item}
+
+@app.delete("/delete/{item_id}")
+def delete_item(item_id:int) -> dict[str,Item]:
+
+    if item_id not in items:
+        raise HTTPException(status_code=404, detail=f"Item com {item_id=} não existe.")
+    
+    item = items.pop(item_id)
+    return {"deleted": item}
+
+
